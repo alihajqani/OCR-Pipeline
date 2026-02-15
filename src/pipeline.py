@@ -2,7 +2,7 @@ from pathlib import Path
 
 from src.logger import logger
 from src.config import INPUT_DIR
-from pipeline import pdfinfo_from_path
+from pdf2image import pdfinfo_from_path
 from src.ocr_client import SharifClient
 from src.utils import create_progress
 from src.pdf_processor import find_all_pdfs, process_single_pdf

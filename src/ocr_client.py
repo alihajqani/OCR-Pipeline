@@ -49,16 +49,20 @@ class SharifClient:
                 return data
 
             except requests.exceptions.HTTPError as e:
-                status = e.response.status_code if e.response else None
+                status = e.response.status_code if e.response is not None else None
                 logger.warning(f"HTTP {status} | {e}")
-                if status == 429:  # Rate limit
+
+                if status == 429:
                     wait = 2 ** attempt * 10
                     logger.info(f"Rate limit hit → wait {wait}s")
                     time.sleep(wait)
                     continue
-                elif status >= 500:
+
+                elif (status is not None and status >= 500) or status is None:
+                    logger.info(f"Server error or unknown status → retry after {2 ** attempt * 5}s")
                     time.sleep(2 ** attempt * 5)
                     continue
+
                 else:
                     logger.error(f"Non-retriable HTTP error: {e}")
                     return None
@@ -84,8 +88,7 @@ class SharifClient:
                 {
                     "role": "user",
                     "content": [
-                        {"type": "text", "text": "<image>\n<|grounding|>Convert the document to markdown."},
-                        {
+                            {"type": "text", "text": "<image>\n<|grounding|>Extract clean Markdown.\n- Ignore dotted leaders (....) and decorative dots.\n- For TOC: - Title (page)\n- Use # for headings, - for lists\n- Output ONLY Markdown, no extra text."},                        {
                             "type": "image_url",
                             "image_url": {
                                 "url": f"data:image/jpeg;base64,{base64_image}"

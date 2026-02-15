@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import Generator, Tuple, List
 
 from PIL import Image
-from pdf_processor import convert_from_path
+from pdf2image import convert_from_path
 
 from src.logger import logger
 from src.ocr_client import SharifClient
